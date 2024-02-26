@@ -1,19 +1,20 @@
-// App.js
-// App.js
 import React from "react";
 import "./App.css";
-import Navbar from "./components/reusable/navbar/Navbar";
-// import Slider from "./components/reusable/slider/Slider";
 import Router from "./components/config/Router";
-
+import { store, persistor } from "./components/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+  
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <Router /> {/* This component should not contain another BrowserRouter */}
-    </div>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <div className="App">
+          <Router />
+        </div>
+      </PersistGate>
+    </Provider>
   );
 }
 
 export default App;
-

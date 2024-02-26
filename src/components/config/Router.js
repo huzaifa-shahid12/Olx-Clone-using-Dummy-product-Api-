@@ -1,33 +1,16 @@
-// import { RouterProvider, createBrowserRouter } from "react-router-dom";
-// // import Card from "../screen/Card/Card";
-// // import App from "../App";
-// // import CardDetails from "../screen/CardDetails/CardDetails";
-// // import CardApi from "../screen/CardData/CardApi";
-// import Dashboard from "../dashboard/Dashboard";
-// import Home from "../../pages/Home";
-
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Home />,
-//   },
-//   // {
-//   //   path: "/card/:id",
-//   //   element: </>,
-//   // },
-// ]);
-// function Router() {
-//   return <RouterProvider router={router} />;  
-// }
-
-// export default Router;
-
-
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Card from "../screen/Card/Card";
 // import App from "../App";
 import Dashboard from "../dashboard/Dashboard";
-import Carddetails from "../screen/CardDetails/Carddetails"
+import Carddetails from "../screen/CardDetails/Carddetails";
+import Login from "../screen/login/Login";
+import Register from "../screen/signup/Register";
+import Sell from "../screen/sell/Sell";
+import PostDetail from "../screen/PostDetail/PostDetail";
+import AddToCart from "../screen/AddToCart/Cart";
+// import { useNavigate } from "react-router-dom";
+// import { useState, useEffect } from "react";
+// import { Navbar } from "react-bootstrap";
 // import CardDetails from "../screen/CardDetails/CardDetails";
 // import CardApi from "../screen/CardData/CardApi";
 
@@ -40,31 +23,58 @@ const router = createBrowserRouter([
     path: "/Carddetails/:id",
     element: <Carddetails />,
   },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/postAd",
+    element: <Sell />,
+  },
+  {
+    path: "/postdetail",
+    element: <PostDetail />,
+  },
+  {
+    path: "/addtocart",
+    element: <AddToCart />,
+  },
 ]);
+
 function Router() {
   return <RouterProvider router={router} />;
 }
 
 export default Router;
 
+// function user() {
+//   const navigate = useNavigate();
+//   const [user, setUser] = useState();
 
+//   useEffect(() => {
+//     onAuthStateChanged(auth, (user) => {
+//       setUser(user);
+//     });
+//   }, []);
 
-// Router.js
-// import React from "react";
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Dashboard from "../dashboard/Dashboard";
-// import Carddetails from "../screen/CardDetails/Carddetails";
+//   useEffect(() => {
+//     const { pathname } = window.location;
 
-// function Router() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path="/" element={<Dashboard />} />
-//         <Route path="/card/:id" element={<Carddetails />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
+//     if (user) {
+//       if (pathname === "/login" || pathname === "/register") {
+//         navigate("/");
+//       } else {
+//         if (pathname === "/postAds") {
+//           navigate("/login");
+//         }
+//       }
+//     }
+//   }, [window.location.pathname.user]);
+//   return(
+//     <></>
+//   )
 // }
-
-// export default Router;
-

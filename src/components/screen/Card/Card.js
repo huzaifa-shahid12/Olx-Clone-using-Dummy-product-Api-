@@ -4,7 +4,6 @@
 // import "./Card.css";
 // import { useNavigate } from "react-router-dom";
 
-
 // function Card(props) {
 //     const navigate = useNavigate();
 
@@ -36,24 +35,40 @@
 import React from "react";
 import "./Card.css";
 import { useNavigate } from "react-router-dom";
+import { addToCart } from "../../store/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-function Card(props) {
-    const navigate = useNavigate();
+function Card(item) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const { id, price, title, description, thumbnail } = props;
+  console.log(item, "ïtem");
 
-    return (
-        <div className="Card col-md-3 mb-4">
-            <div className="card" onClick={() => navigate(`/Carddetails/${id}`)}>
-                <img src={thumbnail} className="card-img-top" alt="Card Thumbnail" />
-                <div className="card-body">
-                    <h5 className="card-title">{title}</h5>
-                    <p className="card-text">{description}</p>
-                    <h6 className="card-price">Price: {price}</h6>
-                </div>
-            </div>
+  const { id, price, title, description, imageUrl, brand } = item;
+
+  console.log("Image URL:", imageUrl);
+
+  return (
+    <div className="Card col-md-3 mb-4">
+      <div className="card-item">
+        <img
+          src={imageUrl[0]}
+          className="card-img-top"
+          alt="Card Thumbnail"
+          onClick={() => navigate(`/Carddetails/${id}`)}
+        />
+        <div className="card-detail ">
+          <h6 className="card-title">Brand: {brand}</h6>
+          <h5 className="card-title mt-2">{title}</h5>
+          <p className="card-text mt-2">Description : {description}</p>
+          <h6 className="card-price">Price: {price}</h6>
+          <button className="add-to-cart">
+            <a onClick={() => dispatch(addToCart(item))}>Add To Cart </a>
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default Card;

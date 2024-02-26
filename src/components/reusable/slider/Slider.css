@@ -2,14 +2,13 @@
     position: relative;
 }
 .slider-content{
-    /* margin-top: 100px; */
-    /* margin-top: -250px; */
     z-index: -1;
     width: 95%;
     height: 300px;
     position: absolute;
     transform: translate(-50%,-30%);
-    top: -250px;
+    /* top: -250px; */
+    top: 100px;
     left: 50%;
     overflow: hidden;
     border: 1px solid #ffffff;

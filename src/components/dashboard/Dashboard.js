@@ -3,43 +3,56 @@ import Category from "../reusable/category/Category";
 import Card from "../screen/Card/Card";
 import { useNavigate } from "react-router-dom";
 import Slider from "../reusable/slider/Slider";
-
-// import Carddetails from "../screen/CardDetails/Carddetails";
+import Navbar from "../reusable/navbar/Navbar";
+import Footer from "../reusable/footer/Footer";
+import { getAds } from "../config/Firebase";
 
 const Dashboard = () => {
-   
   const navigate = useNavigate();
-  const [data, setData] = useState({ products: [] });
-  // const [selectedCard, setSelectedCard] = useState(null);
+  const [products, setProducts] = useState([]);
+
+  console.log(products);
 
   useEffect(() => {
-    fetchApi();
+    getProducts();
   }, []);
 
-  const fetchApi = () => {
-    fetch("https://dummyjson.com/products/")
-      .then((res) => res.json())
-      .then((res) => setData(res))
-      .catch((error) => console.log("Error fetching data: ", error));
+  const getProducts = async () => {
+    const ads = await getAds();
+    setProducts(ads);
   };
 
-  if (!data.products.length) {
+  // const fetchApi = () => {
+  //   fetch("https://dummyjson.com/products/")
+  //     .then((res) => res.json())
+  //     .then((res) => setData(res))
+  //     .catch((error) => console.log("Error fetching data: ", error));
+  // };
+
+  if (!products) {
     return <div>LOADING.....</div>;
   }
 
   return (
     <div className="Dashboard">
       <div className="Dashboard-content">
-         <Slider />
+        <Navbar />
+        <Slider />
         <Category />
         <div className="container-fluid">
           <div className="row">
-            {data.products.map((item) => {
-              const { thumbnail, title, description, price, id } = item;
+            {/* {products.map(item => {
+              return <Card item = {item}/>
+            })} */}
+
+            {products.map((item) => {
+              const { imageUrl, title, description, price, id, brand } = item;
               return (
                 <Card
+                  // item={item}
                   id={id}
-                  thumbnail={thumbnail}
+                  brand={brand}
+                  imageUrl={imageUrl}
                   title={title}
                   description={description}
                   price={price}
@@ -49,6 +62,7 @@ const Dashboard = () => {
             })}
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );

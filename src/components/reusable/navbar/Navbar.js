@@ -1,14 +1,98 @@
-import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+// import "bootstrap/dist/css/bootstrap.min.css"
 import "./Navbar.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import SearchableDropdown from "./SearchableDropdown.js";
 import { animals } from "./data.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../config/Firebase.js";
+import { signOut } from "firebase/auth";
+import { profileData } from "../../config/Firebase.js";
+import { getAuth } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { getCartTotal } from "../../store/cartSlice.js";
 
 const Navbar = () => {
   const [value, setValue] = useState("Select option...");
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState();
+  const [found, setFound] = useState();
+  const [image, setImage] = useState();
+
+   const { cart, totalQuantity} = useSelector(
+     (state) => state.allcart
+   );
+
+  useEffect(() => {
+    // check if user is logged in and store their info
+    onAuthStateChanged(auth, (user) => {
+      console.log(user);
+      if (user) {
+        console.log(user);
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+  }, []);
+
+  // Logout kam  //
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error("Error logging out", error);
+    }
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user;
+        setCurrentUser(uid.email);
+        console.log("user ", currentUser);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+  }, []);
+
+  // sab se pahla kam ha db se data get karna user ka //
+  useEffect(() => {
+    fetchData();
+
+    async function fetchData() {
+      try {
+        const pdata = await profileData();
+        console.log("pdata", pdata);
+        const foundItem = pdata.filter((res) => res.email === currentUser);
+
+        setFound(foundItem);
+        console.log("FOund", foundItem);
+      } catch (error) {
+        alert(error);
+      }
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (found && found[0]) {
+      setImage(found[0].imageUrl);
+    } else {
+      setImage(null);
+    }
+  }, [found]);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getCartTotal());
+  }, [cart]);
 
   return (
     <div className="Navbar">
@@ -108,7 +192,10 @@ const Navbar = () => {
               />
             </div>
             <div className="hhh">
-              <input placeholder="Find Cars, Mobile Phones and more..." />
+              <input
+                className="ms-3"
+                placeholder="Find Cars, Mobile Phones and more..."
+              />
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -122,36 +209,135 @@ const Navbar = () => {
               </button>
             </div>
             <div className="abc">
-              <a>Login</a>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="104"
-                height="48"
-                viewBox="0 0 1603 768"
-                class="_3V9PS"
-              >
-                <path
-                  class="_2bClX _12yOz"
-                  d="M434.442 16.944h718.82c202.72 0 367.057 164.337 367.057 367.058s-164.337 367.057-367.057 367.057h-718.82c-202.721 0-367.058-164.337-367.058-367.058S231.721 16.943 434.442 16.943z"
-                  fill="#fff"
-                />
-                <path
-                  class="_2bClX _YBz-"
-                  d="M427.241 669.489c-80.917 0-158.59-25.926-218.705-73.004l-.016-.014C139.407 542.352 99.766 464.914 99.766 383.997c0-41.07 9.776-80.712 29.081-117.797 25.058-48.139 64.933-89.278 115.333-118.966l-52.379-67.581c-64.73 38.122-115.955 90.98-148.159 152.845C18.8 280.243 6.201 331.224 6.201 383.997c0 104.027 50.962 203.61 139.799 273.175h.016c77.312 60.535 177.193 93.887 281.22 93.887h299.699l25.138-40.783-25.138-40.783H427.237z"
-                  fill="#ffce32"
-                />
-                <path
-                  class="_2bClX _3uYj7"
-                  d="M1318.522 38.596c-45.72-14.369-93.752-21.658-142.762-21.658H427.249c-84.346 0-165.764 21.683-235.441 62.713l3.118 51.726 49.245 15.865c54.16-31.895 117.452-48.739 183.073-48.739h748.511c38.159 0 75.52 5.657 111.029 16.829 44.91 14.111 86.594 37.205 120.526 66.792l66.163-57.68c-43.616-38.01-97.197-67.703-154.957-85.852z"
-                  fill="#23e5db"
-                />
-                <path
-                  class="_2bClX BfroU"
-                  d="M1473.479 124.453l-55.855 9.91-10.307 47.76c61.844 53.929 95.92 125.617 95.92 201.88a251.85 251.85 0 01-11.214 74.363c-38.348 124.311-168.398 211.129-316.262 211.129H726.949l25.121 40.783-25.121 40.783h448.812c190.107 0 357.303-111.638 406.613-271.498a323.69 323.69 0 0014.423-95.559c0-98.044-43.805-190.216-123.317-259.551z"
-                  fill="#3a77ff"
-                />
-              </svg>
-              <h1>+Sell</h1>
+              {console.log(user)}
+              {user ? (
+                <div className="main-div">
+                  <div className="main-container d-flex ">
+                    <div className="profile-img">
+                      <img
+                        className="mt-1"
+                        src={
+                          image
+                            ? `${image}`
+                            : "https://www.olx.com.pk/assets/iconProfilePicture.7975761176487dc62e25536d9a36a61d.png"
+                        }
+                        // src="https://www.olx.com.pk/assets/iconProfilePicture.7975761176487dc62e25536d9a36a61d.png"
+                        alt="User profile"
+                        aria-label="User profile picture"
+                      />
+                    </div>
+                    <div className="dropdown position-absolute ">
+                      <img
+                        src="https://www.olx.com.pk/assets/iconArrowDown_noinline.ec05eae7013321c193965ef15d4e2174.svg"
+                        className="mt-4 se-img"
+                        alt="User profile dropdown arrow"
+                      />
+                      <div class="dropdown-content">
+                        <a>
+                          <div className="drop-content">
+                            <div className="image-section d-flex">
+                              <div className="image">
+                                <img
+                                  // className="mt-1"
+                                  src="https://www.olx.com.pk/assets/iconProfilePicture.7975761176487dc62e25536d9a36a61d.png"
+                                  alt="User profile"
+                                  aria-label="User profile picture"
+                                />
+                              </div>
+                              <div className="image-content">
+                                <h6>Hello ,</h6>
+                                <h5>{user.email}</h5>
+                                <a onClick={() => navigate("/postdetail")}>
+                                  View and edit your profile
+                                </a>
+                              </div>
+                            </div>
+                            <hr />
+                            <div className="bottom-div">
+                              <div className="my-ads">
+                                <img src="https://www.olx.com.pk/assets/iconMyAds_noinline.81f6b0cc8a3d16d363fb142e1489d035.svg" />
+                                <span>My Ads</span>
+                              </div>
+                              <div className="my-favourite mt-2 ">
+                                <img src="https://www.olx.com.pk/assets/iconHeart_noinline.752f43cc1a8fed78adeed73225a090db.svg" />
+                                <span>Favourites & Saved searches</span>
+                              </div>
+                              <div className="by-bussiness mt-2 ">
+                                <img src="https://www.olx.com.pk/assets/iconBusinessPackages_noinline.64a7db94ef2eb1776d43916ce82b1a40.svg" />
+                                <span>Buy bussiness packages</span>
+                              </div>
+                              <div className="bought-package mt-2">
+                                <img src="https://www.olx.com.pk/assets/iconBoughtPackages_noinline.b29b2b61c39def95f4bf58ac5b6dbb59.svg" />
+                                <span>Bought Packages & Billing </span>
+                              </div>
+                              <div className="help mt-2">
+                                <img src="https://www.olx.com.pk/assets/iconBoughtPackages_noinline.b29b2b61c39def95f4bf58ac5b6dbb59.svg" />
+                                <span>Help</span>
+                              </div>
+                              <div className="settings mt-2">
+                                <img src="https://www.olx.com.pk/assets/iconFilters_noinline.0aa1e7bd623dcbcc065196fa3ccba789.svg" />
+                                <span>Settings</span>
+                              </div>
+                              <div
+                                className="logout mt-2"
+                                onClick={handleLogout}
+                              >
+                                <img src="https://www.olx.com.pk/assets/iconLogout_noinline.9da9ed94dfe84e900cc1ae3198b0375b.svg" />
+                                <span>Logout</span>
+                              </div>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div></div>
+                </div>
+              ) : (
+                // <span>{user.email}</span>
+                <a className="ms-2" href="#" onClick={() => navigate("/login")}>
+                  Login
+                </a>
+              )}
+              <div className="sell-btn">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="104"
+                  height="48"
+                  viewBox="0 0 1603 768"
+                  class="_3V9PS"
+                  className="svg"
+                >
+                  <path
+                    class="_2bClX _12yOz"
+                    d="M434.442 16.944h718.82c202.72 0 367.057 164.337 367.057 367.058s-164.337 367.057-367.057 367.057h-718.82c-202.721 0-367.058-164.337-367.058-367.058S231.721 16.943 434.442 16.943z"
+                    fill="#fff"
+                  />
+                  <path
+                    class="_2bClX _YBz-"
+                    d="M427.241 669.489c-80.917 0-158.59-25.926-218.705-73.004l-.016-.014C139.407 542.352 99.766 464.914 99.766 383.997c0-41.07 9.776-80.712 29.081-117.797 25.058-48.139 64.933-89.278 115.333-118.966l-52.379-67.581c-64.73 38.122-115.955 90.98-148.159 152.845C18.8 280.243 6.201 331.224 6.201 383.997c0 104.027 50.962 203.61 139.799 273.175h.016c77.312 60.535 177.193 93.887 281.22 93.887h299.699l25.138-40.783-25.138-40.783H427.237z"
+                    fill="#ffce32"
+                  />
+                  <path
+                    class="_2bClX _3uYj7"
+                    d="M1318.522 38.596c-45.72-14.369-93.752-21.658-142.762-21.658H427.249c-84.346 0-165.764 21.683-235.441 62.713l3.118 51.726 49.245 15.865c54.16-31.895 117.452-48.739 183.073-48.739h748.511c38.159 0 75.52 5.657 111.029 16.829 44.91 14.111 86.594 37.205 120.526 66.792l66.163-57.68c-43.616-38.01-97.197-67.703-154.957-85.852z"
+                    fill="#23e5db"
+                  />
+                  <path
+                    class="_2bClX BfroU"
+                    d="M1473.479 124.453l-55.855 9.91-10.307 47.76c61.844 53.929 95.92 125.617 95.92 201.88a251.85 251.85 0 01-11.214 74.363c-38.348 124.311-168.398 211.129-316.262 211.129H726.949l25.121 40.783-25.121 40.783h448.812c190.107 0 357.303-111.638 406.613-271.498a323.69 323.69 0 0014.423-95.559c0-98.044-43.805-190.216-123.317-259.551z"
+                    fill="#3a77ff"
+                  />
+                </svg>
+                <h1 className="ms-5" onClick={() => navigate("/postAd")}>
+                  +Sell
+                </h1>
+              </div>
+            </div>
+            <div className="card-btn">
+              <button onClick={() => navigate("/addToCart")}>
+                Card <sub>({totalQuantity})</sub>
+              </button>
             </div>
           </div>
         </div>
@@ -168,7 +354,7 @@ const Navbar = () => {
               d="M85.392 277.333h60.331l366.336 366.336 366.336-366.336h60.331v60.331l-408.981 409.003h-35.307l-409.045-409.003z"
             />
           </svg>
-          <ul>
+          <ul className="last-header">
             <li>
               <a href="">Mobile phones</a>
             </li>
